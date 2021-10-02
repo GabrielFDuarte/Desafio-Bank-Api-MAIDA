@@ -19,6 +19,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     private List<User> users;
 
 //    Cria a lista de usuários caso ainda não tenha sido criada.
@@ -38,6 +41,11 @@ public class UserService {
             }
         }
         return false;
+    }
+
+//    Criptografa a senha do usuário
+    public String encryptUserPassword(String rawPassword) {
+        return passwordEncoder.encode(rawPassword);
     }
 
 //    Adição do objeto User na list de usuários cadastrados.

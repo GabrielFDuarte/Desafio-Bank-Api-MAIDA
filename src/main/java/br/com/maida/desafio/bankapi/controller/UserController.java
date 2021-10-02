@@ -46,6 +46,11 @@ public class UserController {
                             .toString());
         }
 
+        String rawPassword = jsonUserString.getPassword();
+
+        String encryptedPassword = userService.encryptUserPassword(rawPassword);
+        jsonUserString.setPassword(encryptedPassword);
+
         userService.add(jsonUserString);
 
         return ResponseEntity.status(HttpStatus.OK).body(new UserResponse(jsonUserString.getEmail(), jsonUserString.getName()));
