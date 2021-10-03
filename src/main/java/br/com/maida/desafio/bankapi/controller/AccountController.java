@@ -6,6 +6,8 @@
 package br.com.maida.desafio.bankapi.controller;
 
 import br.com.maida.desafio.bankapi.model.Account;
+import br.com.maida.desafio.bankapi.model.AccountBalance;
+import br.com.maida.desafio.bankapi.model.AccountBalanceResponse;
 import br.com.maida.desafio.bankapi.model.AccountResponse;
 import br.com.maida.desafio.bankapi.model.AccountTransfer;
 import br.com.maida.desafio.bankapi.model.AccountTransferResponse;
@@ -139,6 +141,33 @@ public class AccountController {
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(
                     new JSONObject()
                             .put("erro", "Conta de origem não encontrada para o usuário informado")
+                            .toString());
+        }
+
+    }
+
+    @PostMapping(path = "/balance", produces = {"application/json"})
+    @ResponseBody
+    public ResponseEntity<Object> balance(@Valid @RequestBody AccountBalance jsonAccountBalanceString) {
+
+        if (accountService.validateNumberExists(jsonAccountBalanceString.getAccount_number())) {
+            if (accountService.validateAccountEmail(jsonAccountBalanceString.getAccount_number(),
+                    SecurityContextHolder.getContext().getAuthentication().getName())) {
+
+                Account balanceAccount = accountService.getAccountByNumber(jsonAccountBalanceString.getAccount_number());
+                
+                return ResponseEntity.status(HttpStatus.OK).body(new AccountBalanceResponse(balanceAccount.getNumber(), balanceAccount.getBalance()));
+                
+            } else {
+                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(
+                        new JSONObject()
+                                .put("erro", "Conta não encontrada para o usuário informado")
+                                .toString());
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(
+                    new JSONObject()
+                            .put("erro", "Conta não encontrada para o usuário informado")
                             .toString());
         }
 
